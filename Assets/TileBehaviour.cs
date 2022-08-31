@@ -19,7 +19,7 @@ public class TileBehaviour : MonoBehaviour
 
 
     // Reference to the piece in the square.
-    [HideInInspector]
+    
     public GameObject currentPiece;
     public short tileId;
     public bool isActive;
@@ -71,19 +71,18 @@ public class TileBehaviour : MonoBehaviour
         {
             try
             {
-                Debug.Log(currentPiece.name);
                 switch(currentPiece.name)
                 {
                     case "white_pawn": WhitePawn_ShowLegalMoves(GameModel.White_Pieces); break;
                     case "black_pawn": BlackPawn_ShowLegalMoves(GameModel.Black_Pieces); break;
-                    case "white_rook": break;
-                    case "black_rook": break;
+                    case "white_rook": Rook_ShowLegalMoves(GameModel.White_Pieces,GameModel.Black_Pieces); break;
+                    case "black_rook": Rook_ShowLegalMoves(GameModel.Black_Pieces,GameModel.White_Pieces); break;
                     case "white_knight": Knight_ShowLegalMoves(GameModel.White_Pieces); break;
                     case "black_knight": Knight_ShowLegalMoves(GameModel.Black_Pieces); break;
-                    case "white_bishop": break;
-                    case "black_bishop": break; 
-                    case "white_queen": break;
-                    case "black_queen": break;
+                    case "white_bishop": Bishop_ShowLegalMoves(GameModel.White_Pieces,GameModel.Black_Pieces); break;
+                    case "black_bishop": Bishop_ShowLegalMoves(GameModel.Black_Pieces,GameModel.White_Pieces); break; 
+                    case "white_queen": Queen_ShowLegalMoves(GameModel.White_Pieces,GameModel.Black_Pieces); break;
+                    case "black_queen": Queen_ShowLegalMoves(GameModel.Black_Pieces,GameModel.White_Pieces); break;
                     case "white_king": King_ShowLegalMoves(GameModel.White_Pieces); break;
                     case "black_king": King_ShowLegalMoves(GameModel.Black_Pieces); break;
                 }
@@ -103,44 +102,82 @@ public class TileBehaviour : MonoBehaviour
             switch(targetedPiece.name)
             {
                 case "white_pawn":
-                    SpawnPiece("p","w");
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
+                    SpawnPiece("p","w"); // Spawn piece also updates the current piece.
+                    // UpdateGameModel(tileToNull, tileToSet, pieceCode);
                     GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"white_pawn");
                     GenerateBoard.SetAllInactive();
                     break;
                 case "black_pawn": 
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
                     SpawnPiece("p","b");
                     GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"black_pawn");
                     GenerateBoard.SetAllInactive();
                     break;
-                case "white_rook": break;
-                case "black_rook": break;
+                case "white_rook": 
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
+                    SpawnPiece("r","w");
+                    GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"white_rook");
+                    GenerateBoard.SetAllInactive();                   
+                    break;
+                case "black_rook": 
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
+                    SpawnPiece("r","b");
+                    GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"black_rook");
+                    GenerateBoard.SetAllInactive();                   
+                    break;
                 case "white_knight": 
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
                     SpawnPiece("n","w"); 
                     // UpdateGameModel(tileToNull, tileToSet, pieceCode);
                     GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"white_knight"); // the 2 places + the piece occupying
                     GenerateBoard.SetAllInactive();                     
                     break;
                 case "black_knight": 
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
                     SpawnPiece("n","b");
                     GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"black_knight");
                     GenerateBoard.SetAllInactive(); 
                     break;
-                case "white_bishop": break;
-                case "black_bishop": break; 
-                case "white_queen": break;
-                case "black_queen": break;
+                case "white_bishop": 
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
+                    SpawnPiece("b","w");
+                    GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"white_bishop");
+                    GenerateBoard.SetAllInactive(); 
+                    break;
+                case "black_bishop":
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
+                    SpawnPiece("b","b");
+                    GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"white_bishop");
+                    GenerateBoard.SetAllInactive(); 
+                    break; 
+                case "white_queen": 
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
+                    SpawnPiece("q","w");
+                    GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"white_queen");
+                    GenerateBoard.SetAllInactive(); 
+                    break;
+                case "black_queen": 
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
+                    SpawnPiece("q","b");
+                    GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"black_queen");
+                    GenerateBoard.SetAllInactive(); 
+                    break;
                 case "white_king": 
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
                     SpawnPiece("k","w");
                     GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"white_king");
                     GenerateBoard.SetAllInactive(); 
                     break;
                 case "black_king": 
+                    targetedPieceTile.GetComponent<TileBehaviour>().currentPiece = null;
                     SpawnPiece("k","b");
                     GameModel.UpdateGameModel(targetedPieceTile.GetComponent<TileBehaviour>().tileId,tileId,"black_king");
                     GenerateBoard.SetAllInactive(); 
                     break;
             }
             // This line takes care of removing the previous square piece.
+            // Remove tile data + Actually destroy de instance
             Object.Destroy(targetedPieceTile.transform.GetChild(0).gameObject);
         }
         
@@ -349,6 +386,68 @@ public class TileBehaviour : MonoBehaviour
                 externalTile.isActive = false;
             }
         }        
+    }
+
+    void Bishop_ShowLegalMoves(ulong ownSide,ulong oppositeSide)
+    {
+        ulong bishop_pos = ((ulong)1 << tileId);
+        ulong res = GameModel.bishop_legal_moves(bishop_pos,ownSide,oppositeSide);   
+
+        foreach (var tile in GenerateBoard.GameTiles)
+        {
+            TileBehaviour externalTile = tile.GetComponent<TileBehaviour>();
+            if ( (res & ((ulong)1 << externalTile.tileId) ) != 0 ) // That tile has to be active
+            {                
+                externalTile.isActive = true;
+                externalTile.targetedPiece = currentPiece; // The piece we plan to move
+                externalTile.targetedPieceTile = gameObject;
+            }
+            else
+            {
+                externalTile.isActive = false;
+            }
+        }     
+    }
+    void Rook_ShowLegalMoves(ulong ownSide,ulong oppositeSide)
+    {
+        ulong rook_pos = ((ulong)1 << tileId);
+        ulong res = GameModel.rook_legal_moves(rook_pos,ownSide,oppositeSide);   
+
+        foreach (var tile in GenerateBoard.GameTiles)
+        {
+            TileBehaviour externalTile = tile.GetComponent<TileBehaviour>();
+            if ( (res & ((ulong)1 << externalTile.tileId) ) != 0 ) // That tile has to be active
+            {                
+                externalTile.isActive = true;
+                externalTile.targetedPiece = currentPiece; // The piece we plan to move
+                externalTile.targetedPieceTile = gameObject;
+            }
+            else
+            {
+                externalTile.isActive = false;
+            }
+        }     
+    }
+
+    void Queen_ShowLegalMoves(ulong ownSide,ulong oppositeSide)
+    {
+        ulong queen_pos = ((ulong)1 << tileId);
+        ulong res = GameModel.queen_legal_moves(queen_pos,ownSide,oppositeSide);   
+
+        foreach (var tile in GenerateBoard.GameTiles)
+        {
+            TileBehaviour externalTile = tile.GetComponent<TileBehaviour>();
+            if ( (res & ((ulong)1 << externalTile.tileId) ) != 0 ) // That tile has to be active
+            {                
+                externalTile.isActive = true;
+                externalTile.targetedPiece = currentPiece; // The piece we plan to move
+                externalTile.targetedPieceTile = gameObject;
+            }
+            else
+            {
+                externalTile.isActive = false;
+            }
+        }     
     }
 
 }

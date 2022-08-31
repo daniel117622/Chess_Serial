@@ -170,8 +170,8 @@ public class GameModel : MonoBehaviour // This class is used to store a position
     }
     public static ulong black_pawn_legal_moves(in ulong pawn_loc, in ulong sidePieces)
     {
-        ulong spot_1_clip = clearColumn(7);
-        ulong spot_3_clip = clearColumn(0);
+        ulong spot_1_clip = clearColumn(0);
+        ulong spot_3_clip = clearColumn(7);
 
         ulong spot_1 = (pawn_loc & spot_1_clip) >> 9;
         ulong spot_2 = pawn_loc >> 8;
@@ -182,6 +182,229 @@ public class GameModel : MonoBehaviour // This class is used to store a position
         ulong pawnValid = pawn_moves & (ulong.MaxValue - sidePieces);
         return pawnValid;
     }
+
+    public static ulong bishop_legal_moves(in ulong bishop_loc , in ulong sidePieces, in ulong oppositePieces)
+    {
+        // Iterate up - right 
+        ulong bishop_moves = 0;
+        int pos = Bitwise.FirstBitSet(bishop_loc);
+        
+        // ====================== UPPER RIGHT DIAGONAL =================================
+        for (int i = 1 ; i <= 7 ; i++)
+        {
+            // Check if there is an own piece. If there is break inmediately
+            // No own piece , then move on.
+            // If capture add this to the list and break
+            if ((9*i+pos) % 8 == 0 ) // This indicates we are on the h file. So break
+            {
+                break;
+            }
+            
+            if ( Bitwise.IsBitSetAtPosition(sidePieces,9*i + pos) ) // Is there a piece of my own?
+            {
+                break;
+            }
+            else if ( Bitwise.IsBitSetAtPosition(oppositePieces,9*i+pos))
+            {
+                bishop_moves |= Bitwise.SetBitAtPosition((ulong)0,9*i+pos);
+                break;
+            }
+            else
+            {
+                bishop_moves |= Bitwise.SetBitAtPosition((ulong)0,9*i+pos);
+            }
+
+            if ((9*i+pos) % 8 == 7 ) // This indicates we are on the h file. So break
+            {
+                break;
+            }
+        }
+        // ====================== LOWER RIGHT DIAGONAL =================================
+        for (int i = 1 ; i <= 7 ; i++)
+        {
+            int targetPos = (-7*i+pos);
+            if (targetPos % 8 == 0 ) // This indicates we are on the h file. So break
+            {
+                break;
+            }
+            
+            if ( Bitwise.IsBitSetAtPosition(sidePieces,targetPos) ) // Is there a piece of my own?
+            {
+                break;
+            }
+            else if ( Bitwise.IsBitSetAtPosition(oppositePieces,targetPos))
+            {
+                bishop_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos);
+                break;
+            }
+            else
+            {
+                bishop_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos);
+            }
+
+            if (targetPos % 8 == 7 ) // This indicates we are on the h file. So break
+            {
+                break;
+            }
+        }
+        // UPPER LEFT DIAGONAL
+        for (int i = 1 ; i <= 7 ; i++)
+        {
+            int targetPos = (7*i+pos);
+            if (targetPos % 8 == 7 ) // This indicates we are on the h file. So break
+            {
+                break;
+            }
+            
+            if ( Bitwise.IsBitSetAtPosition(sidePieces,targetPos) ) // Is there a piece of my own?
+            {
+                break;
+            }
+            else if ( Bitwise.IsBitSetAtPosition(oppositePieces,targetPos))
+            {
+                bishop_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos);
+                break;
+            }
+            else
+            {
+                bishop_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos);
+            }
+
+            if (targetPos % 8 == 0 ) // This indicates we are on the h file. So break
+            {
+                break;
+            }
+        }
+        // LOWER LEFT DIAGONAL
+        for (int i = 1 ; i <= 7 ; i++)
+        {
+            int targetPos = (-9*i+pos);
+            if (targetPos % 8 == 7 ) // This indicates we are on the h file. So break
+            {
+                break;
+            }
+            
+            if ( Bitwise.IsBitSetAtPosition(sidePieces,targetPos) ) // Is there a piece of my own?
+            {
+                break;
+            }
+            else if ( Bitwise.IsBitSetAtPosition(oppositePieces,targetPos))
+            {
+                bishop_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos);
+                break;
+            }
+            else
+            {
+                bishop_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos);
+            }
+
+            if (targetPos % 8 == 0 ) // This indicates we are on the h file. So break
+            {
+                break;
+            }
+        }
+        // All moves.
+        return bishop_moves;
+    }
+
+    public static ulong rook_legal_moves(in ulong rook_loc , in ulong ownSide, in ulong oppositePieces)
+    {
+        // Iterate up - right 
+        ulong rook_moves = 0;
+        int pos = Bitwise.FirstBitSet(rook_loc);
+
+        // Movement to the right
+        for (int i = 1 ; i <= 7 ; i++)
+        {
+            int targetPos = pos + i;
+            // Check for right bounds.
+            if (targetPos % 8 == 0) // You are on the h file. You cannot move right anymore.
+            {
+                break;
+            }
+            if (Bitwise.IsBitSetAtPosition(ownSide,targetPos))
+            {
+                break;
+            }
+            if (Bitwise.IsBitSetAtPosition(oppositePieces,targetPos))
+            {
+                rook_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos); // Allows to capture. Blocks further movement in that direction.
+                break;
+            }            
+            rook_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos);
+        }
+        // Movement to the left
+        for (int i = 1 ; i <= 7 ; i++)
+        {
+            int targetPos = pos - i;
+            // Check for right bounds.
+            if (targetPos % 8 == 7) // You are on the a file. You cannot move left anymore.
+            {
+                break;
+            }
+            if (Bitwise.IsBitSetAtPosition(ownSide,targetPos))
+            {
+                break;
+            }
+            if (Bitwise.IsBitSetAtPosition(oppositePieces,targetPos))
+            {
+                rook_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos); // Allows to capture. Blocks further movement in that direction.
+                break;
+            }            
+            rook_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos);
+        }
+        // Move up
+        for (int i = 1 ; i <= 7 ; i++)
+        {
+            int targetPos = pos + 8*i;
+            // Check for right bounds.
+            if (targetPos >= 64) // You cant go higher
+            {
+                break;
+            }
+            if (Bitwise.IsBitSetAtPosition(ownSide,targetPos))
+            {
+                break;
+            }
+            if (Bitwise.IsBitSetAtPosition(oppositePieces,targetPos))
+            {
+                rook_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos); // Allows to capture. Blocks further movement in that direction.
+                break;
+            }   
+            rook_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos);
+        }
+        // Move down
+        for (int i = 1 ; i <= 7 ; i++)
+        {
+            int targetPos = pos - 8*i;
+            // Check for right bounds.
+            if (targetPos <= -1) // You cant go higher
+            {
+                break;
+            }
+            if (Bitwise.IsBitSetAtPosition(ownSide,targetPos))
+            {
+                break;
+            }
+            if (Bitwise.IsBitSetAtPosition(oppositePieces,targetPos))
+            {
+                rook_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos); // Allows to capture. Blocks further movement in that direction.
+                break;
+            }   
+            rook_moves |= Bitwise.SetBitAtPosition((ulong)0,targetPos);
+        }
+
+        return rook_moves;
+    }
+
+    public static ulong queen_legal_moves(in ulong queen_loc, in ulong ownSide, in ulong oppositePieces)
+    {
+        ulong queen_legal = 0;
+        queen_legal |= rook_legal_moves(queen_loc,ownSide,oppositePieces);
+        queen_legal |= bishop_legal_moves(queen_loc,ownSide,oppositePieces);
+        return queen_legal;
+    }
+
     public static void DebugPosition(ulong integerToConvert)
     {
         byte[] val = BitConverter.GetBytes(integerToConvert);
@@ -193,7 +416,6 @@ public class GameModel : MonoBehaviour // This class is used to store a position
         }
         Debug.Log(s);
     }
-
     private static void NullPieces(int tileToNull)
     {
         Black_Pawns &= ~((ulong)1 << tileToNull);
@@ -281,8 +503,7 @@ public class GameModel : MonoBehaviour // This class is used to store a position
         White_Pieces = White_Knights | White_Kings | White_Pawns | White_Rooks | White_Bishops |  White_Queens;
         Black_Pieces = Black_Rooks | Black_Bishops | Black_Knights | Black_Kings | Black_Queens | Black_Pawns;
         Full_Board = White_Pieces | Black_Pieces;
-
-        Debug.Log("GameModel updated!");
-        GameModel.DebugPosition(Full_Board);
+        
+        DebugPosition(Black_Pawns);
     }
 }
