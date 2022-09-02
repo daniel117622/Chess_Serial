@@ -73,8 +73,8 @@ public class TileBehaviour : MonoBehaviour
             {
                 switch(currentPiece.name)
                 {
-                    case "white_pawn": WhitePawn_ShowLegalMoves(GameModel.White_Pieces); break;
-                    case "black_pawn": BlackPawn_ShowLegalMoves(GameModel.Black_Pieces); break;
+                    case "white_pawn": WhitePawn_ShowLegalMoves(GameModel.White_Pieces,GameModel.Black_Pieces); break;
+                    case "black_pawn": BlackPawn_ShowLegalMoves(GameModel.Black_Pieces,GameModel.White_Pieces); break;
                     case "white_rook": Rook_ShowLegalMoves(GameModel.White_Pieces,GameModel.Black_Pieces); break;
                     case "black_rook": Rook_ShowLegalMoves(GameModel.Black_Pieces,GameModel.White_Pieces); break;
                     case "white_knight": Knight_ShowLegalMoves(GameModel.White_Pieces); break;
@@ -346,10 +346,10 @@ public class TileBehaviour : MonoBehaviour
         }        
     }
 
-    void WhitePawn_ShowLegalMoves(ulong ownSide)
+    void WhitePawn_ShowLegalMoves(ulong ownSide,ulong oppositePieces)
     {
         ulong pawn_pos = ((ulong)1 << tileId);
-        ulong res = GameModel.white_pawn_legal_moves(pawn_pos,ownSide);   
+        ulong res = GameModel.white_pawn_legal_moves(pawn_pos,ownSide,oppositePieces);   
 
         foreach (var tile in GenerateBoard.GameTiles)
         {
@@ -367,10 +367,10 @@ public class TileBehaviour : MonoBehaviour
         }        
     }
 
-    void BlackPawn_ShowLegalMoves(ulong ownSide)
+    void BlackPawn_ShowLegalMoves(ulong ownSide,ulong oppositePieces)
     {
         ulong pawn_pos = ((ulong)1 << tileId);
-        ulong res = GameModel.black_pawn_legal_moves(pawn_pos,ownSide);   
+        ulong res = GameModel.black_pawn_legal_moves(pawn_pos,ownSide,oppositePieces);   
 
         foreach (var tile in GenerateBoard.GameTiles)
         {

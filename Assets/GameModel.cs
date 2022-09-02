@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
@@ -154,33 +153,113 @@ public class GameModel : MonoBehaviour // This class is used to store a position
 
     }
 
-    public static ulong white_pawn_legal_moves(in ulong pawn_loc, in ulong sidePieces)
+    public static ulong white_pawn_legal_moves(in ulong pawn_loc, in ulong sidePieces, in ulong oppositePieces)
     {
-        ulong spot_1_clip = clearColumn(7);
         ulong spot_3_clip = clearColumn(0);
-
-        ulong spot_1 = (pawn_loc & spot_1_clip) << 9;
-        ulong spot_2 = pawn_loc << 8;
-        ulong spot_3 = (pawn_loc & spot_3_clip) << 7;        
+        ulong spot_1_clip = clearColumn(7);
         
+        int pawn_pos = Bitwise.FirstBitSet(pawn_loc);
 
-        ulong pawn_moves = spot_1 | spot_2 | spot_3;
+        ulong spot_1; // Left capture
+        ulong spot_2; // Forward movement
+        ulong spot_3; // Right capture
+        ulong spot_4; // Double forward movement.
+        Debug.Log(!Bitwise.IsBitSetAtPosition(oppositePieces,pawn_pos+8));
+        // IS PAWN BLOCKED FORWARD 1
+        if ( !(Bitwise.IsBitSetAtPosition(sidePieces,pawn_pos+8) || Bitwise.IsBitSetAtPosition(oppositePieces,pawn_pos+8)))
+        {
+            spot_2 = pawn_loc << 8;
+        }
+        else
+        {
+            spot_2 = 0;
+        }
+        // IS PAWN BLOCKED FORWARD 2
+        if ((!Bitwise.IsBitSetAtPosition(sidePieces,pawn_pos+16) || !Bitwise.IsBitSetAtPosition(oppositePieces,pawn_pos+16)) && (pawn_pos <= 15 && pawn_pos >= 8))
+        {
+            spot_4 = pawn_loc << 16;
+        }
+        else
+        {
+            spot_4 = 0;
+        }
+
+
+        if (Bitwise.IsBitSetAtPosition(oppositePieces,pawn_pos+7))
+        {
+            spot_1 = (pawn_loc & spot_3_clip) << 7; 
+        } 
+        else
+        {
+            spot_1 = 0;
+        }
+
+        if (Bitwise.IsBitSetAtPosition(oppositePieces,pawn_pos+9))
+        {
+            spot_3 = (pawn_loc & spot_1_clip) << 9; 
+        } 
+        else
+        {
+            spot_3 = 0;
+        }
+
+        ulong pawn_moves = spot_1 | spot_2 | spot_3 | spot_4;
         ulong pawnValid = pawn_moves & (ulong.MaxValue - sidePieces);
         return pawnValid;
     }
-    public static ulong black_pawn_legal_moves(in ulong pawn_loc, in ulong sidePieces)
+    public static ulong black_pawn_legal_moves(in ulong pawn_loc, in ulong sidePieces, in ulong oppositePieces)
     {
-        ulong spot_1_clip = clearColumn(0);
         ulong spot_3_clip = clearColumn(7);
+        ulong spot_1_clip = clearColumn(0);
 
-        ulong spot_1 = (pawn_loc & spot_1_clip) >> 9;
-        ulong spot_2 = pawn_loc >> 8;
-        ulong spot_3 = (pawn_loc & spot_3_clip) >> 7;        
-        
+        int pawn_pos = Bitwise.FirstBitSet(pawn_loc);
 
-        ulong pawn_moves = spot_1 | spot_2 | spot_3;
+        ulong spot_1; // Left capture
+        ulong spot_2; // Forward movement
+        ulong spot_3; // Right capture
+        ulong spot_4; // Double forward movement.
+
+        // IS PAWN BLOCKED FORWARD 1
+        if ( !(Bitwise.IsBitSetAtPosition(sidePieces,pawn_pos-8) || Bitwise.IsBitSetAtPosition(oppositePieces,pawn_pos-8)))
+        {
+            spot_2 = pawn_loc >> 8;
+        }
+        else
+        {
+            spot_2 = 0;
+        }
+        // IS PAWN BLOCKED FORWARD 2
+        if ((!Bitwise.IsBitSetAtPosition(sidePieces,pawn_pos-16) || !Bitwise.IsBitSetAtPosition(oppositePieces,pawn_pos-16)) && (pawn_pos <= 55 && pawn_pos >= 48))
+        {
+            spot_4 = pawn_loc >> 16;
+        }
+        else
+        {
+            spot_4 = 0;
+        }
+
+
+        if (Bitwise.IsBitSetAtPosition(oppositePieces,pawn_pos-7))
+        {
+            spot_1 = (pawn_loc & spot_3_clip) >> 7; 
+        } 
+        else
+        {
+            spot_1 = 0;
+        }
+
+        if (Bitwise.IsBitSetAtPosition(oppositePieces,pawn_pos-9))
+        {
+            spot_3 = (pawn_loc & spot_1_clip) >> 9; 
+        } 
+        else
+        {
+            spot_3 = 0;
+        }
+
+        ulong pawn_moves = spot_1 | spot_2 | spot_3 | spot_4;
         ulong pawnValid = pawn_moves & (ulong.MaxValue - sidePieces);
-        return pawnValid;
+        return pawnValid;    
     }
 
     public static ulong bishop_legal_moves(in ulong bishop_loc , in ulong sidePieces, in ulong oppositePieces)
